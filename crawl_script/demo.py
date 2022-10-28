@@ -11,12 +11,7 @@ resp.content
 # inpage.js
 # 需要反混淆了，目前搜了几个关键词，感觉不对，再搜几个
 # 暂时看不出来
-#%%
-from selenium import webdriver
 
-
-driver = webdriver.Firefox()
-driver.get(url)
 # %%
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
@@ -31,5 +26,80 @@ service = Service(executable_path=ChromeDriverManager().install())
 # )
 # service = Service(executable_path=ChromeDriverManager())
 #%%
+import time
 driver = webdriver.Chrome(service=service)
+# %%
+driver.get("https://tool.ytxsvr.com/md5")
+# %%
+
+def get_one_phone_number(md5):
+    input_el = driver.find_element_by_class_name("el-input__inner")
+    input_el.clear()
+    input_el.send_keys(md5)
+    decrypt_btn = driver.find_elements_by_class_name("el-button--default")[1]
+    decrypt_btn.click()
+    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, "el-alert__title")))
+    # time.sleep(0.1)
+    result_el = driver.find_elements_by_class_name("el-alert__title")[0]
+    return result_el.text
+get_one_phone_number("e693a91a798cf0235c3d61751e650c3b")
+# %%
+
+import os
+# with open("../data/ETC_sms02_8_sms01_7.ETC.filter") as file:
+#     lines = file.readlines()
+# %%
+# lines[0]
+# %%
+file_folder = "../data/教育1010/"
+md5_set = set()
+for file in os.listdir(file_folder):
+    with open(file_folder + file) as file:
+        lines = file.readlines()
+    md5_set = md5_set.union(set([line.split(",")[0] for line in lines]))
+len(md5_set)
+#%%
+with open("/Users/su/Downloads/会计人群包_最近15天.txt") as file:
+    md5_set = [one.replace("\n", "") for one in file.readlines()]
+#%%
+md5_set
+# %%
+
+md5_phone_dict = {}
+#%%
+from tqdm import tqdm
+for md5 in tqdm(md5_set):
+    if md5 in md5_phone_dict.keys():
+        continue
+    result = get_one_phone_number(md5)
+    if result == '请输入有效的md5值!':
+        print("错误", result)
+    
+    md5_phone_dict[md5] = result
+#%%
+import pickle
+pickle.dump(md5_phone_dict, open("../data/会计人群包_最近15天.pkl","wb"))
+#%%
+
+write_file = open("../data/会计人群包_最近15天_phone_number.csv","w")
+for file in os.listdir(file_folder):
+    with open(file_folder + file) as file:
+        lines = file.readlines()
+    for line in lines:
+        new_line = md5_phone_dict[line.split(',')[0]] + "," + ",".join(line.split(',')[1:]) 
+        # new_line = md5_phone_dict[line.split(',')[0]] + "\n" + ",".join(line.split(',')[1:]) 
+        write_file.write(new_line)
+    # md5_set = md5_set.union(set([line.split(",")[0] for line in lines]))
+# %%
+new_lines = []
+for line in lines:
+    new_line = md5_phone_dict[line.split(',')[0]] + "," + ",".join(line.split(',')[1:]) 
+    new_lines.append(new_line)
+# %%
+with open("../data/会计人群包_最近15天_phone_number.csv","w") as f:
+    f.writelines([one + "\n" for one in md5_phone_dict.values()])
+# %%
+
+with open("../data/ETC.csv","w") as f:
+    f.writelines(new_lines)
 # %%
