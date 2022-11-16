@@ -27,7 +27,13 @@ service = Service(executable_path=ChromeDriverManager().install())
 # service = Service(executable_path=ChromeDriverManager())
 #%%
 import time
-driver = webdriver.Chrome(service=service)
+from selenium.webdriver.chrome.options import Options
+chromeOptions = Options()
+chromeOptions.headless = True
+chromeOptions.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4324.104 Safari/537.36')
+chromeOptions.add_argument('--start-maximized')
+chromeOptions.add_argument('window-size=1400,900')
+driver = webdriver.Chrome(service=service, options=chromeOptions)
 # %%
 driver.get("https://tool.ytxsvr.com/md5")
 # %%
@@ -37,12 +43,18 @@ def get_one_phone_number(md5):
     input_el.clear()
     input_el.send_keys(md5)
     decrypt_btn = driver.find_elements_by_class_name("el-button--default")[1]
+    # decrypt_btn = driver.find_elements_by_class_name("el-button--default")[0]
+    # time.sleep(0.1)
     decrypt_btn.click()
     WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, "el-alert__title")))
     # time.sleep(0.1)
     result_el = driver.find_elements_by_class_name("el-alert__title")[0]
     return result_el.text
 get_one_phone_number("e693a91a798cf0235c3d61751e650c3b")
+#%%
+get_one_phone_number("7f7c0bf3b7c33e80e660a9e92a79ec70")
+#%%
+driver.get_screenshot_as_file("../save.png")
 # %%
 
 import os
@@ -52,7 +64,7 @@ import os
 
 # lines[0]
 # %%
-file_folder = "../data/zhuangxiu1109/"
+file_folder = "../../Msg-Post-Processing/data/心血管1115/"
 md5_set = set()
 for file in os.listdir(file_folder):
     with open(file_folder + file) as file:
@@ -72,9 +84,9 @@ with open("../data/zhuangxiu_city_select.filter") as file:
 md5_set
 # %%
 
-# md5_phone_dict = {}
+md5_phone_dict = {}
 import  pickle
-md5_phone_dict = pickle.load(open("../data/zhuangxiu.pkl","rb"))
+# md5_phone_dict = pickle.load(open("../data/zhuangxiu.pkl","rb"))
 #%%
 from tqdm import tqdm
 for md5 in tqdm(md5_set):
@@ -87,7 +99,8 @@ for md5 in tqdm(md5_set):
     md5_phone_dict[md5] = result
 #%%
 import pickle
-pickle.dump(md5_phone_dict, open("../data/zhuangxiu.pkl","wb"))
+pickle.dump(md5_phone_dict, open("../data/md5_phone_dict.pkl","wb"))
+pickle.dump(md5_set, open("../data/md5_set.pkl","wb"))
 #%%
 
 write_file = open("../data/会计人群包_最近60天_phone_number.csv","w")
@@ -119,3 +132,5 @@ with open("../data/会计人群包_最近60天_phone_number.csv","w") as f:
 with open("../data/ETC.csv","w") as f:
     f.writelines(new_lines)
 # %%
+# change into multi processing
+# https://blog.csdn.net/zwq912318834/article/details/78962648
