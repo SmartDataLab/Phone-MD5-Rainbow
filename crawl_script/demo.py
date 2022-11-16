@@ -49,9 +49,10 @@ import os
 # with open("../data/ETC_sms02_8_sms01_7.ETC.filter") as file:
 #     lines = file.readlines()
 # %%
+
 # lines[0]
 # %%
-file_folder = "../data/教育1010/"
+file_folder = "../data/zhuangxiu1109/"
 md5_set = set()
 for file in os.listdir(file_folder):
     with open(file_folder + file) as file:
@@ -59,13 +60,21 @@ for file in os.listdir(file_folder):
     md5_set = md5_set.union(set([line.split(",")[0] for line in lines]))
 len(md5_set)
 #%%
-with open("/Users/su/Downloads/会计人群包_最近15天.txt") as file:
+with open("/Users/su/Downloads/会计人群包_最近60天.txt") as file:
     md5_set = [one.replace("\n", "") for one in file.readlines()]
+with open("/Users/su/Downloads/会计人群包_最近15天.txt") as file:
+    md5_set_last = [one.replace("\n", "") for one in file.readlines()]
+md5_set = list(set(md5_set) - set(md5_set_last))
+#%%
+with open("../data/zhuangxiu_city_select.filter") as file:
+    md5_set = [one.split(",")[0] for one in file.readlines()]
 #%%
 md5_set
 # %%
 
-md5_phone_dict = {}
+# md5_phone_dict = {}
+import  pickle
+md5_phone_dict = pickle.load(open("../data/zhuangxiu.pkl","rb"))
 #%%
 from tqdm import tqdm
 for md5 in tqdm(md5_set):
@@ -78,10 +87,10 @@ for md5 in tqdm(md5_set):
     md5_phone_dict[md5] = result
 #%%
 import pickle
-pickle.dump(md5_phone_dict, open("../data/会计人群包_最近15天.pkl","wb"))
+pickle.dump(md5_phone_dict, open("../data/zhuangxiu.pkl","wb"))
 #%%
 
-write_file = open("../data/会计人群包_最近15天_phone_number.csv","w")
+write_file = open("../data/会计人群包_最近60天_phone_number.csv","w")
 for file in os.listdir(file_folder):
     with open(file_folder + file) as file:
         lines = file.readlines()
@@ -90,13 +99,20 @@ for file in os.listdir(file_folder):
         # new_line = md5_phone_dict[line.split(',')[0]] + "\n" + ",".join(line.split(',')[1:]) 
         write_file.write(new_line)
     # md5_set = md5_set.union(set([line.split(",")[0] for line in lines]))
+#%%
+
+with open("../data/zhuangxiu_all.filter") as f:
+    lines = f.readlines()
 # %%
 new_lines = []
 for line in lines:
     new_line = md5_phone_dict[line.split(',')[0]] + "," + ",".join(line.split(',')[1:]) 
     new_lines.append(new_line)
+#%%
+with open("../data/zhuangxiu_all.csv","w") as f:
+    f.writelines(new_lines)
 # %%
-with open("../data/会计人群包_最近15天_phone_number.csv","w") as f:
+with open("../data/会计人群包_最近60天_phone_number.csv","w") as f:
     f.writelines([one + "\n" for one in md5_phone_dict.values()])
 # %%
 
