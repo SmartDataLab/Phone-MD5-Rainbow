@@ -1,6 +1,6 @@
 #%%
 import json
-d = json.load(open("../../Msg-Post-Processing/sig_database/心血管.json"))
+d = json.load(open("../../Msg-Post-Processing/sig_database/教育1010.json"))
 json_dict = d
 #%%
 sig_id_map = {key:json_dict["data"][key]["sig_id"] for key in json_dict["data"].keys()}
@@ -10,7 +10,7 @@ sig_2_id = {sig_name: detail["sig_id"] for sig_name, detail in d["data"].items()
 id_2_sig = {value:key for key,value in sig_2_id.items()}
 # %%
 import os
-folder_path = "../../Msg-Post-Processing/data/心血管1115/"
+folder_path = "../../Msg-Post-Processing/data/教育1115/"
 files = os.listdir(folder_path)
 files
 #%%
@@ -50,17 +50,22 @@ for file in tqdm(one_month_files):
         for one in f.readlines():
             splits = one.split(",")
             # if re.search(re_keyword, splits[3]):
-            cnt_province[splits[-3]] += 1
-            name = id_2_sig[int(splits[1])]
-            regex = json_dict["data"][name]["template"][int(splits[2])-1]["regex"]
-            # if  splits[-3] in select_province:
-            select_list.append(",".join([md5_phone_dict[splits[0]]] + splits[1:-1] + [regex+"\n"]))
-            md5_list.append(splits[0])
+            # some md5 dict may not prepare well
+            if splits[0] in md5_phone_dict.keys():
+                cnt_province[splits[-3]] += 1
+                name = id_2_sig[int(splits[1])]
+                if splits[2] == "-1":
+                    regex = splits[3]
+                else:
+                    regex = json_dict["data"][name]["template"][int(splits[2])-1]["regex"]
+                # if  splits[-3] in select_province:
+                select_list.append(",".join([md5_phone_dict[splits[0]]] + splits[1:-1] + [regex+"\n"]))
+                md5_list.append(splits[0])
         cnt = Counter(select_list)
         select_all += select_list
     cnt_all.update(cnt)
 #%%
-with open("../data/心血管.csv","w") as f:
+with open("../data/核桃_2w5.csv","w") as f:
     f.writelines(select_all)
  
 # %%

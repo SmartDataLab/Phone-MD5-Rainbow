@@ -24,6 +24,7 @@ chromeOptions.add_argument('window-size=1400,900')
 drivers = [webdriver.Chrome(service=service, options=chromeOptions) for _ in range(WORKER_NUM)]
 [driver.get("https://tool.ytxsvr.com/md5") for driver in drivers]
 #%%
+import pickle
 md5_set = pickle.load(open("../data/md5_set.pkl","rb"))
 md5_phone_dict = pickle.load(open("../data/md5_phone_dict.pkl","rb"))
 
@@ -84,12 +85,14 @@ for i in range(WORKER_NUM):
     process = multiprocessing.Process(target = getPhoneNumberFunc, args = (queue, lock, i, res_queue))
     process.start()
     getKeyProcessLst.append(process)
-
+write_f = open("../data/write_tmp.txt","w") 
 # 关不上进程
 for th_item in getKeyProcessLst:
     while th_item.is_alive():
         while False == res_queue.empty():
-            queue_list.append(res_queue.get())
+            one = res_queue.get()
+            write_f.write(one[0] + " " + one[1] + "\n")
+            queue_list.append(one)
 # 守护线程
 # join 等待线程终止，如果不使用join方法对每个线程做等待终止，那么线程在运行过程中，可能会去执行最后的打印
 # 如果没有join，父进程就不会阻塞，启动子进程之后，父进程就直接执行最后的打印了
@@ -103,7 +106,7 @@ print(f"all queue used.")
 # %%
 # queue_list = [ res_queue.get() for _ in range(res_queue.qsize())]
 # %%
-# queue_list
+queue_list
 # %%
 for md5, phone in queue_list:
     md5_phone_dict[md5] = phone
@@ -113,5 +116,20 @@ len(md5_phone_dict)
 len(md5_set)
 # %%
 
+pickle.dump(md5_phone_dict, open("../data/md5_phone_dict.pkl","wb"))
+# %%
+import pickle
+md5_set = pickle.load(open("../data/md5_set.pkl","rb"))
+md5_phone_dict = pickle.load(open("../data/md5_phone_dict.pkl","rb"))
+#%%
+
+read_f = open("../data/write_tmp.txt","r")
+lines = read_f.readlines()
+# %%
+new_dict = {line.strip().split()[0]:line.strip().split()[1] for line in lines}
+new_dict
+# %%
+md5_phone_dict.update(new_dict)
+# %%
 pickle.dump(md5_phone_dict, open("../data/md5_phone_dict.pkl","wb"))
 # %%
