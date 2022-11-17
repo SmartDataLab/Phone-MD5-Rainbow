@@ -64,7 +64,7 @@ import os
 
 # lines[0]
 # %%
-file_folder = "../../Msg-Post-Processing/data/心血管1115/"
+file_folder = "../../Msg-Post-Processing/data/教育1115/"
 md5_set = set()
 for file in os.listdir(file_folder):
     with open(file_folder + file) as file:

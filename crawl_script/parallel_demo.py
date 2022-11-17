@@ -4,7 +4,7 @@
 import multiprocessing
 import time
 import pickle
-WORKER_NUM = 4
+WORKER_NUM = 10
 
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
@@ -65,8 +65,8 @@ def getPhoneNumberFunc(queue, lock, mark, res_queue):
 from tqdm import tqdm
 # if __name__ == '__main__':
 lock = multiprocessing.Lock()       # 进程锁
-queue = multiprocessing.Queue(60000)  # 队列，用于存放所有的初始关键字
-res_queue = multiprocessing.Queue(60000)  # 队列，用于存放所有的初始关键字
+queue = multiprocessing.Queue(600000)  # 队列，用于存放所有的初始关键字
+res_queue = multiprocessing.Queue(600000)  # 队列，用于存放所有的初始关键字
 # queue.
 for md5 in md5_set:
     if md5 not in md5_phone_dict.keys():
