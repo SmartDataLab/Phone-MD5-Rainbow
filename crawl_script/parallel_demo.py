@@ -26,11 +26,14 @@ drivers = [webdriver.Chrome(service=service, options=chromeOptions) for _ in ran
 #%%
 import pickle
 md5_set = pickle.load(open("../data/md5_set.pkl","rb"))
-md5_phone_dict = pickle.load(open("../data/md5_phone_dict.pkl","rb"))
+# md5_phone_dict = pickle.load(open("../data/md5_phone_dict.pkl","rb"))
+md5_phone_dict = {}
+
 
 # %%
 
 def get_one_phone_number(md5, driver):
+    print(md5)
     input_el = driver.find_element_by_class_name("el-input__inner")
     input_el.clear()
     input_el.send_keys(md5)
