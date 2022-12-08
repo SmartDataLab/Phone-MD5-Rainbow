@@ -33,14 +33,16 @@ md5_phone_dict = {}
 # %%
 
 def get_one_phone_number(md5, driver):
-    print(md5)
-    input_el = driver.find_element_by_class_name("el-input__inner")
+    #print(md5)
+    #input_el = driver.find_element_by_class_name("el-input__inner")
+    input_el = driver.find_element(By.CLASS_NAME,"el-input__inner")
     input_el.clear()
     input_el.send_keys(md5)
-    decrypt_btn = driver.find_elements_by_class_name("el-button--default")[1]
+    #decrypt_btn = driver.find_elements_by_class_name("el-button--default")[1]
+    decrypt_btn = driver.find_elements(By.CLASS_NAME,"el-button--default")[1]
     decrypt_btn.click()
     WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, "el-alert__title")))
-    result_el = driver.find_elements_by_class_name("el-alert__title")[0]
+    result_el = driver.find_elements(By.CLASS_NAME,"el-alert__title")[0]
     return result_el.text
 
 
@@ -69,8 +71,8 @@ def getPhoneNumberFunc(queue, lock, mark, res_queue):
 from tqdm import tqdm
 # if __name__ == '__main__':
 lock = multiprocessing.Lock()       # 进程锁
-queue = multiprocessing.Queue(600000)  # 队列，用于存放所有的初始关键字
-res_queue = multiprocessing.Queue(600000)  # 队列，用于存放所有的初始关键字
+queue = multiprocessing.Queue(6000)  # 队列，用于存放所有的初始关键字
+res_queue = multiprocessing.Queue(600)  # 队列，用于存放所有的初始关键字
 # queue.
 for md5 in md5_set:
     if md5 not in md5_phone_dict.keys():
