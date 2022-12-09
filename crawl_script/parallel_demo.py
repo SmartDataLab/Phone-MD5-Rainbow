@@ -25,7 +25,7 @@ drivers = [webdriver.Chrome(service=service, options=chromeOptions) for _ in ran
 [driver.get("https://tool.ytxsvr.com/md5") for driver in drivers]
 #%%
 import pickle
-md5_set = pickle.load(open("../data/md5_set.pkl","rb"))
+md5_set = list(pickle.load(open("../data/md5_set.pkl","rb")))
 # md5_phone_dict = pickle.load(open("../data/md5_phone_dict.pkl","rb"))
 md5_phone_dict = {}
 
@@ -50,9 +50,12 @@ def get_one_phone_number(md5, driver):
 # 由mark标记是哪个进程执行的动作
 def getPhoneNumberFunc(queue, lock, mark, res_queue):
     count = 0 
-    while not queue.empty():
+    max_iter = len(md5_set) // WORKER_NUM
+    while count < max_iter:#not queue.empty():
         # def get(self, block=True, timeout=None):
-        md5 = queue.get()
+        #md5 = queue.get()
+        idx = count * WORKER_NUM + mark
+        md5 = md5_set[idx]
         # 加锁，是为了防止散乱的打印。 保护一些临界状态
         # 多个进程运行的状态下，如果同一时刻都调用到print，那么显示的打印结果将会混乱
         # print(f"keyWord = {keyWord}, markProcess = {mark}")
@@ -71,16 +74,16 @@ def getPhoneNumberFunc(queue, lock, mark, res_queue):
 from tqdm import tqdm
 # if __name__ == '__main__':
 lock = multiprocessing.Lock()       # 进程锁
-queue = multiprocessing.Queue(6000)  # 队列，用于存放所有的初始关键字
+queue = multiprocessing.Queue(11000)  # 队列，用于存放所有的初始关键字
 res_queue = multiprocessing.Queue(600)  # 队列，用于存放所有的初始关键字
 # queue.
-for md5 in md5_set:
-    if md5 not in md5_phone_dict.keys():
+for md5 in tqdm(list(md5_set)[:10000]):
+    #if md5 not in md5_phone_dict.keys():
     # print(f"keyWord = {keyWord}")
     # 如果queue定的太小，剩下的放不进去，程序就会block住，等待队列有空余空间
     # def put(self, obj, block=True, timeout=None):
     # print(md5)
-        queue.put(md5)
+    queue.put(md5)
 print(f"queueBefore = {queue}")
 getKeyProcessLst = []
 queue_list = [ ]
