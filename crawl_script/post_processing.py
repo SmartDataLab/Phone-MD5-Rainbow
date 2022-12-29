@@ -1,6 +1,6 @@
 #%%
 import json
-d = json.load(open("../../Msg-Post-Processing/sig_database/贷款线索.json"))
+d = json.load(open("../../Msg-Post-Processing/sig_database/房车人群.json"))
 json_dict = d
 #%%
 sig_id_map = {key:json_dict["data"][key]["sig_id"] for key in json_dict["data"].keys()}
@@ -10,9 +10,9 @@ sig_2_id = {sig_name: detail["sig_id"] for sig_name, detail in d["data"].items()
 id_2_sig = {value:key for key,value in sig_2_id.items()}
 # %%
 import os
-folder_path = "../../Msg-Post-Processing/data/"
-# files = os.listdir(folder_path)
-files = ["贷款线索_select.csv"]
+folder_path = "../../Msg-Post-Processing/data/房车公积金1218/"
+files = os.listdir(folder_path)
+# files = ["信贷列表_左摩洋__select.csv"]
 
 files
 #%%
@@ -64,14 +64,14 @@ for file in tqdm(files):
                 # else:
                 #     regex = json_dict["data"][name]["template"][int(splits[2])-1]["regex"]
                 # if  splits[-3] in select_province:
-                select_list.append(",".join([md5_phone_dict[splits[0]]] + splits[1:-1] + [regex+"\n"]))
+                select_list.append(",".join([md5_phone_dict[splits[0]]] + splits[1:-1] + [name, regex+"\n"]))
                 md5_list.append(splits[0])
         cnt = Counter(md5_list)
         select_all += select_list
     cnt_all.update(cnt)
 print(cnt.most_common(100))
 #%%
-with open("../data/南京贷款线索1w.csv","w") as f:
+with open("../data/房车公积金_3w.csv","w") as f:
     f.writelines(select_all)
  
 # %%

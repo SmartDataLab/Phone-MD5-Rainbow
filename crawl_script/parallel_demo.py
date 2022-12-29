@@ -21,8 +21,13 @@ chromeOptions.headless = True
 chromeOptions.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4324.104 Safari/537.36')
 chromeOptions.add_argument('--start-maximized')
 chromeOptions.add_argument('window-size=1400,900')
+use_proxy = True
+PROXY = "http://49.85.237.95:5021"
+# TODO logger for multi processing
+if use_proxy:
+    chromeOptions.add_argument('--proxy-server=%s' % PROXY) 
 drivers = [webdriver.Chrome(service=service, options=chromeOptions) for _ in range(WORKER_NUM)]
-[driver.get("https://tool.ytxsvr.com/md5") for driver in drivers]
+print([driver.get("https://tool.ytxsvr.com/md5") for driver in drivers])
 #%%
 import pickle
 md5_set = list(pickle.load(open("../data/md5_set.pkl","rb")))

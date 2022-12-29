@@ -43,16 +43,25 @@ input_el.clear()
 input_el.send_keys(md5)
 #%%
 
-def get_one_phone_number(md5):
+# def get_one_phone_number(md5):
+#     input_el = driver.find_element_by_class_name("el-input__inner")
+#     input_el.clear()
+#     input_el.send_keys(md5)
+#     decrypt_btn = driver.find_elements_by_class_name("el-button--default")[1]
+#     # decrypt_btn = driver.find_elements_by_class_name("el-button--default")[0]
+#     time.sleep(1)
+#     decrypt_btn.click()
+#     WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, "el-alert__title")))
+#     # time.sleep(0.1)
+#     result_el = driver.find_elements_by_class_name("el-alert__title")[0]
+#     return result_el.text
+def get_one_phone_number(md5,driver):
     input_el = driver.find_element_by_class_name("el-input__inner")
     input_el.clear()
     input_el.send_keys(md5)
     decrypt_btn = driver.find_elements_by_class_name("el-button--default")[1]
-    # decrypt_btn = driver.find_elements_by_class_name("el-button--default")[0]
-    time.sleep(0.1)
     decrypt_btn.click()
     WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, "el-alert__title")))
-    # time.sleep(0.1)
     result_el = driver.find_elements_by_class_name("el-alert__title")[0]
     return result_el.text
 get_one_phone_number("e693a91a798cf0235c3d61751e650c3b")
@@ -90,8 +99,10 @@ md5_set
 # %%
 
 md5_phone_dict = {}
-import  pickle
+# import  pickle
 # md5_phone_dict = pickle.load(open("../data/zhuangxiu.pkl","rb"))
+import pickle
+md5_set = pickle.load(open("../data/md5_set.pkl","rb"))
 #%%
 from tqdm import tqdm
 for md5 in tqdm(md5_set):
