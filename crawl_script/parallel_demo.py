@@ -22,18 +22,31 @@ chromeOptions.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x6
 chromeOptions.add_argument('--start-maximized')
 chromeOptions.add_argument('window-size=1400,900')
 use_proxy = True
-PROXY = "http://49.85.237.95:5021"
+PROXY = "http://49.84.243.184:5021"
 # TODO logger for multi processing
 if use_proxy:
     chromeOptions.add_argument('--proxy-server=%s' % PROXY) 
 drivers = [webdriver.Chrome(service=service, options=chromeOptions) for _ in range(WORKER_NUM)]
 print([driver.get("https://tool.ytxsvr.com/md5") for driver in drivers])
 #%%
+# drivers[0].create_options()
+# drivers[0].
+#%%
 import pickle
 md5_set = list(pickle.load(open("../data/md5_set.pkl","rb")))
-# md5_phone_dict = pickle.load(open("../data/md5_phone_dict.pkl","rb"))
-md5_phone_dict = {}
 
+use_md5_dict_remove = True
+print(len(md5_set))
+if use_md5_dict_remove:
+    md5_phone_dict = pickle.load(open("../data/md5_phone_dict.pkl","rb"))
+    md5_set = list(set(md5_set) - set(md5_phone_dict.keys()))
+else:
+    md5_phone_dict = {}
+print(len(md5_set))
+
+max_curl_limit = 100000
+md5_set = md5_set[:max_curl_limit]
+print(len(md5_set))
 
 # %%
 

@@ -1,3 +1,28 @@
+import pandas as pd
+keyword_df = pd.read_csv("../../Msg-Post-Processing/final_filter/律政0206已标(全)_更新.csv",encoding="gbk")
+#  encoding="gbk"
+keyword_df
+
+#%%
+import re
+filter_dict = {}
+for idx in range(len(keyword_df)):
+    signature = keyword_df.iloc[idx,0]
+    keywords = list(keyword_df.iloc[idx,2:])
+    keywords = [one for one in keywords if not pd.isna(one)]
+    filter_dict[signature] = keywords
+# filter_dict = {}
+# sig_class_map = {}
+# for idx in range(len(keyword_df)):
+#     class_ = keyword_df.iloc[idx,0]
+#     if pd.isna(class_):
+#         continue
+#     signature = keyword_df.iloc[idx,1]
+#     keywords = list(keyword_df.iloc[idx,3:])
+#     keywords = [one for one in keywords if not pd.isna(one)]
+#     filter_dict[signature] = keywords
+#     sig_class_map[signature] = class_
+#%%
 md5_list = []
 #  single file
 # with open("../../Msg-Post-Processing/data/信贷列表_左摩洋__select.csv") as f:
@@ -7,13 +32,13 @@ md5_list = []
 #         md5_list.append("0" * (32- len(part_md5)) + part_md5 if len(part_md5) < 32 else part_md5)
 
 # folder
-folder_path = "../../Msg-Post-Processing/data/装修量房0209/"
+folder_path = "../../Msg-Post-Processing/data/律政0206/"
 
 
 #%%
 import json
 # d = json.load(open("../../YQ-XY-MSG/regex_data/房车人群.json"))
-d = json.load(open("../../Msg-Post-Processing/sig_database/装修量房.json"))
+d = json.load(open("../../Msg-Post-Processing/sig_database/律政.json"))
 json_dict = d
 #%%
 sig_id_map = {key:json_dict["data"][key]["sig_id"] for key in json_dict["data"].keys()}
@@ -69,6 +94,19 @@ for file_name in os.listdir(folder_path):
             splits = line.split(",")
             # if re.search(re_keyword, splits[3]):
             part_md5 = splits[0]
+            content = splits[3]
+            sig_id = splits[1]
+            sig = id_2_sig[int(sig_id)]
+            # data_df.loc[idx,"短信内容"]
+            if sig not in filter_dict.keys():
+                continue
+            keywords = filter_dict[sig]
+            re_keyword = "|".join(keywords)
+            # print(keywords)
+            # print(re_keyword)
+            # print(content)
+            # if len(keywords) != 0 and re.search(re_keyword, content)  == None:
+            #     continue
                 # play for shanghai bank
                 ## region = splits[-1]
             # sig_id = splits[1]
